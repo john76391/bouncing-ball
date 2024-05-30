@@ -13,6 +13,8 @@ let ground_x = 100;
 let ground_y = 500;
 let ground_height = 5;
 let brickArray = [];
+// 用來判斷是否結束遊戲，當10個磚塊都被球撞到後結束
+let count = 0;
 
 // 取得介於某兩數字之間的值
 function getRandomArbitrary(min, max) {
@@ -27,6 +29,7 @@ class Brick {
     this.width = 50;
     this.height = 50;
     brickArray.push(this);
+    this.visible = true;
   }
 
   drawBrick() {
@@ -61,7 +64,9 @@ c.addEventListener("mousemove", (e) => {
 function drawCircle() {
   // TODO -------------------------確認球是否打到磚塊-------------------------
   brickArray.forEach((v, i) => {
-    if (v.touchingBall(circle_x, circle_y)) {
+    if (v.visible && v.touchingBall(circle_x, circle_y)) {
+      count++;
+      v.visible = false;
       // 改變x, y方向速度，並且將brick從brickArray中移除
       // 判斷球是從哪個方向撞到brick
       // 從下方撞擊
@@ -81,9 +86,14 @@ function drawCircle() {
         xSpeed *= -1;
       }
       // 刪除掉撞擊到的brick
-      brickArray.splice(i, 1);
+      // brickArray.splice(i, 1); // 會有時間複雜度的問題 O(n)
+
       // 遊戲結束判定
-      if (brickArray.length == 0) {
+      //   if (brickArray.length == 0) {
+      //     alert("遊戲結束");
+      //     clearInterval(game);
+      //   }
+      if (count == 10) {
         alert("遊戲結束");
         clearInterval(game);
       }
@@ -141,7 +151,9 @@ function drawCircle() {
 
   // 畫出所有的brick
   brickArray.forEach((v) => {
-    v.drawBrick();
+    if (v.visible) {
+      v.drawBrick();
+    }
   });
 
   // 畫出可控制的地板
